@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LUXE DICE | Premium Digital Dice Roller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f0c1f;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Gradient Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15), transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15), transparent 50%),
+                        linear-gradient(135deg, #0f0c1f 0%, #1a1535 50%, #0f0c1f 100%);
+            z-index: -2;
+        }
+
+        /* Animated Particles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #a855f7, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 120px, #6366f1, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            background-repeat: repeat;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-200px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Premium Header */
+        .premium-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .premium-header h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #c084fc 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .premium-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Glass Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Hero Dice Section */
+        .hero-section {
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dice-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .dice-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.4), transparent 70%);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .dice {
+            font-size: 180px;
+            position: relative;
+            z-index: 2;
+            cursor: pointer;
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+            transition: all 0.2s ease;
+        }
+
+        .dice:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            20% { transform: rotate(360deg) scale(1.1); opacity: 0.9; }
+            40% { transform: rotate(720deg) scale(1.2); }
+            60% { transform: rotate(1080deg) scale(1.15); }
+            80% { transform: rotate(1440deg) scale(1.05); }
+            100% { transform: rotate(1800deg) scale(1); opacity: 1; }
+        }
+
+        .rolling {
+            animation: diceRoll 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .roll-button {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+            margin-top: 1rem;
+        }
+
+        .roll-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .roll-button:active {
+            transform: translateY(0);
+        }
+
+        /* Stats Grid Premium */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card-premium {
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card-premium:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Multi Dice Premium */
+        .multi-dice-panel {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dice-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .dice-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-weight: 500;
+        }
+
+        .dice-option:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+        }
+
+        .dice-option.active {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            border-color: transparent;
+        }
+
+        .multi-dice-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            min-height: 120px;
+        }
+
+        .mini-dice-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mini-dice {
+            font-size: 60px;
+        }
+
+        .mini-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #a5b4fc;
+            margin-top: 0.5rem;
+        }
+
+        .total-premium {
+            text-align: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Dice Types Premium */
+        .dice-types-panel {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .type-grid {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .type-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: white;
+        }
+
+        .type-chip:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: scale(1.05);
+        }
+
+        .type-chip.active-type {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        /* History & Actions */
+        .history-panel {
+            padding: 2rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .clear-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            color: #f87171;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .history-timeline {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .history-item {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            min-width: 70px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .history-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        .premium-footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .premium-header h1 {
+                font-size: 2rem;
+            }
+            .dice {
+                font-size: 120px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Premium Header -->
+        <div class="premium-header">
+            <div class="badge">✦ PREMIUM EDITION ✦</div>
+            <h1>DIGITAL DICE ROLLER</h1>
+            <p>Experience the finest virtual dice rolling with stunning visuals</p>
+        </div>
+
+        <!-- Hero Section - Main Dice -->
+        <div class="glass-card hero-section">
+            <div class="dice-container">
+                <div class="dice-glow"></div>
+                <div class="dice" id="mainDice">⚀</div>
+            </div>
+            <button class="roll-button" id="rollMainBtn">
+                🎲 ROLL THE DICE 🎲
+            </button>
+            <div style="margin-top: 1rem; color: #94a3b8; font-size: 0.9rem;" id="lastRollText">
+                Last roll: 1
+            </div>
+        </div>
+
+        <!-- Premium Stats Grid -->
+        <div class="stats-grid">
+            <div class="glass-card stat-card-premium">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-label">Total Rolls</div>
+                <div class="stat-number" id="statTotal">0</div>
+            </div>
+            <div class="glass-card stat-card-premium">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-label">Highest Roll</div>
+                <div class="stat-number" id="statHighest">0</div>
+            </div>
+            <div class="glass-card stat-card-premium">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Average</div>
+                <div class="stat-number" id="statAverage">0.00</div>
+            </div>
+            <div class="glass-card stat-card-premium">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">Luckiest #</div>
+                <div class="stat-number" id="statLuckiest">-</div>
+            </div>
+        </div>
+
+        <!-- Multi Dice Section -->
+        <div class="glass-card multi-dice-panel">
+            <div class="section-title">
+                <span>🎲</span> MULTI-DICE ROLLER
+                <span>🎲</span>
+            </div>
+            <div class="dice-selector" id="diceSelector">
+                <div class="dice-option" data-count="2">2 Dice</div>
+                <div class="dice-option active" data-count="3">3 Dice</div>
+                <div class="dice-option" data-count="4">4 Dice</div>
+                <div class="dice-option" data-count="5">5 Dice</div>
+                <div class="dice-option" data-count="6">6 Dice</div>
+            </div>
+            <button class="roll-button" id="rollMultiBtn" style="margin-bottom: 1.5rem; padding: 0.75rem 2rem;">
+                🎲 ROLL ALL DICE 🎲
+            </button>
+            <div class="multi-dice-grid" id="multiDiceGrid">
+                <!-- Dynamic dice appear here -->
+            </div>
+            <div class="total-premium" id="multiTotal">
+                <strong>Total:</strong> 0
+            </div>
+        </div>
+
+        <!-- Dice Types Section -->
+        <div class="glass-card dice-types-panel">
+            <div class="section-title">
+                <span>⚡</span> CUSTOM DICE TYPES
+                <span>⚡</span>
+            </div>
+            <div class="type-grid" id="typeGrid">
+                <div class="type-chip" data-sides="4">D4</div>
+                <div class="type-chip active-type" data-sides="6">D6</div>
+                <div class="type-chip" data-sides="8">D8</div>
+                <div class="type-chip" data-sides="10">D10</div>
+                <div class="type-chip" data-sides="12">D12</div>
+                <div class="type-chip" data-sides="20">D20</div>
+                <div class="type-chip" data-sides="100">D100</div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem; color: #94a3b8;">
+                Currently using: <strong id="currentTypeLabel">D6 (6-sided)</strong>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="glass-card history-panel">
+            <div class="history-header">
+                <div class="section-title" style="margin-bottom: 0;">📜 ROLL HISTORY</div>
+                <button class="clear-btn" id="clearHistoryBtn">🗑️ Clear All</button>
+            </div>
+            <div class="history-timeline" id="historyTimeline">
+                <div style="color: #64748b; text-align: center; width: 100%;">No rolls yet. Start rolling!</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="premium-footer">
+            <p>✦ Premium Digital Dice Roller ✦ | Press SPACE to roll | Made with precision ✦</p>
+        </div>
+    </div>
+
+    <script>
+        // Dice Unicode Mapping
+        const diceFaces = { 1: '⚀', 2: '⚁', 3: '⚂', 4: '⚃', 5: '⚄', 6: '⚅' };
+
+        // Game State
+        let currentSides = 6;
+        let totalRolls = 0;
+        let highestRoll = 0;
+        let allRolls = [];
+        let rollHistory = [];
+        let currentMultiCount = 3;
+
+        // DOM Elements
+        const mainDice = document.getElementById('mainDice');
+        const rollMainBtn = document.getElementById('rollMainBtn');
+        const lastRollText = document.getElementById('lastRollText');
+        const statTotal = document.getElementById('statTotal');
+        const statHighest = document.getElementById('statHighest');
+        const statAverage = document.getElementById('statAverage');
+        const statLuckiest = document.getElementById('statLuckiest');
+        const multiDiceGrid = document.getElementById('multiDiceGrid');
+        const multiTotal = document.getElementById('multiTotal');
+        const rollMultiBtn = document.getElementById('rollMultiBtn');
+        const historyTimeline = document.getElementById('historyTimeline');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const currentTypeLabel = document.getElementById('currentTypeLabel');
+
+        // Helper: Roll single dice
+        function rollSingle() {
+            return Math.floor(Math.random() * currentSides) + 1;
+        }
+
+        // Helper: Get dice display (Unicode for D6, else numeric)
+        function getDiceDisplay(value) {
+            if (currentSides === 6) {
+                return diceFaces[value] || '⚀';
+            }
+            return `🎲 ${value}`;
+        }
+
+        // Update all statistics
+        function updateStats(rollValue) {
+            totalRolls++;
+            allRolls.push(rollValue);
+            rollHistory.unshift(rollValue);
+            if (rollHistory.length > 15) rollHistory.pop();
+
+            if (rollValue > highestRoll) highestRoll = rollValue;
+            const avg = allRolls.reduce((a,b) => a+b, 0) / allRolls.length;
+
+            // Luckiest number
+            const freq = {};
+            allRolls.forEach(v => freq[v] = (freq[v] || 0) + 1);
+            let luckiest = '-', maxFreq = 0;
+            for (let num in freq) {
+                if (freq[num] > maxFreq) {
+                    maxFreq = freq[num];
+                    luckiest = num;
+                }
+            }
+
+            // Update UI
+            statTotal.textContent = totalRolls;
+            statHighest.textContent = highestRoll;
+            statAverage.textContent = avg.toFixed(2);
+            statLuckiest.textContent = luckiest;
+
+            updateHistoryDisplay();
+        }
+
+        // Update history timeline
+        function updateHistoryDisplay() {
+            if (rollHistory.length === 0) {
+                historyTimeline.innerHTML = '<div style="color: #64748b; text-align: center; width: 100%;">No rolls yet. Start rolling!</div>';
+                return;
+            }
+            historyTimeline.innerHTML = rollHistory.map(value => `
+                <div class="history-item">
+                    <div class="history-number">${value}</div>
+                    <div class="history-label">Roll</div>
+                </div>
+            `).join('');
+        }
+
+        // Animate and roll main dice
+        function rollMainDice() {
+            mainDice.classList.add('rolling');
+            
+            // Simulate quick changes
+            let intervals = [];
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const tempVal = Math.floor(Math.random() * currentSides) + 1;
+                    mainDice.textContent = getDiceDisplay(tempVal);
+                }, i * 35);
+            }
+            
+            setTimeout(() => {
+                const finalValue = rollSingle();
+                mainDice.textContent = getDiceDisplay(finalValue);
+                mainDice.classList.remove('rolling');
+                lastRollText.textContent = `Last roll: ${finalValue} (D${currentSides})`;
+                updateStats(finalValue);
+                
+                // Haptic feedback
+                if (navigator.vibrate) navigator.vibrate(50);
+            }, 420);
+        }
+
+        // Roll multiple dice
+        function rollMultiple() {
+            const rolls = [];
+            for (let i = 0; i < currentMultiCount; i++) {
+                rolls.push(rollSingle());
+            }
+            const total = rolls.reduce((a,b) => a+b, 0);
+            
+            // Display dice
+            multiDiceGrid.innerHTML = '';
+            rolls.forEach(val => {
+                const diceCard = document.createElement('div');
+                diceCard.className = 'mini-dice-card';
+                diceCard.innerHTML = `
+                    <div class="mini-dice">${getDiceDisplay(val)}</div>
+                    <div class="mini-value">${val}</div>
+                `;
+                multiDiceGrid.appendChild(diceCard);
+            });
+            
+            multiTotal.innerHTML = `<strong>Total:</strong> ${total} &nbsp;|&nbsp; <strong>Individual:</strong> ${rolls.join(', ')}`;
+            
+            // Add first dice to history
+            updateStats(rolls[0]);
+        }
+
+        // Change dice type
+        function setDiceType(sides) {
+            currentSides = sides;
+            currentTypeLabel.textContent = `D${sides} (${sides}-sided)`;
+            mainDice.textContent = (sides === 6) ? '⚀' : `🎲 D${sides}`;
+            lastRollText.textContent = `Ready to roll D${sides}!`;
+            
+            // Update active state in UI
+            document.querySelectorAll('.type-chip').forEach(chip => {
+                chip.classList.remove('active-type');
+                if (parseInt(chip.dataset.sides) === sides) {
+                    chip.classList.add('active-type');
+                }
+            });
+        }
+
+        // Clear history
+        function clearHistory() {
+            totalRolls = 0;
+            highestRoll = 0;
+            allRolls = [];
+            rollHistory = [];
+            statTotal.textContent = '0';
+            statHighest.textContent = '0';
+            statAverage.textContent = '0.00';
+            statLuckiest.textContent = '-';
+            updateHistoryDisplay();
+            lastRollText.textContent = 'History cleared!';
+            mainDice.textContent = (currentSides === 6) ? '⚀' : `🎲 D${currentSides}`;
+        }
+
+        // Event Listeners
+        rollMainBtn.addEventListener('click', rollMainDice);
+        rollMultiBtn.addEventListener('click', rollMultiple);
+        clearHistoryBtn.addEventListener('click', clearHistory);
+
+        // Dice selector for multi
+        document.querySelectorAll('.dice-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                document.querySelectorAll('.dice-option').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                currentMultiCount = parseInt(opt.dataset.count);
+                rollMultiple(); // Auto roll to show
+            });
+        });
+
+        // Dice type selection
+        document.querySelectorAll('.type-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const sides = parseInt(chip.dataset.sides);
+                setDiceType(sides);
+            });
+        });
+
+        // Keyboard shortcut: Spacebar
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !e.target.matches('button, input, textarea')) {
+                e.preventDefault();
+                rollMainDice();
+            }
+        });
+
+        // Initial multi dice display
+        rollMultiple();
+
+        // Add smooth entrance animations
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.glass-card').forEach((card, idx) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, idx * 100);
+            });
+        });
+    </script>
+</body>
+</html>
